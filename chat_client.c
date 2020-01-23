@@ -45,7 +45,8 @@ int main(int argc, char const *argv[]) {
 	server_addr.sin_port = htons(portno);
 	bcopy((char *) server->h_addr, (char *) &server_addr.sin_addr.s_addr, server->h_length);
 
-	if(connect(client_socket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) error("Connection failed...");
+	if(connect(client_socket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
+		error("Connection failed...");
 
 	while(1) {
 		bzero(buffer, 256);
