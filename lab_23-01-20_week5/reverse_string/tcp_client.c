@@ -23,8 +23,8 @@ int main(int argc, char const *argv[]) {
 
 	struct sockaddr_in server_addr;
 
-	if ((sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-		printf("oops!!! socket creation failed...\n");
+	if((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		printf("socket creation failed... \n");
 		exit(0);
 	}
 
@@ -34,14 +34,28 @@ int main(int argc, char const *argv[]) {
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-	char* msg = "";
-	sendto(sock_fd, (const char*) msg, strlen(msg), 0, (const struct sockaddr*) &server_addr, sizeof(server_addr));
+	if (connect(sock_fd, (struct sockaddr*) &server_addr, sizeof(server_addr)) < 0) {
+		printf("connection failed...\n");
+		exit(0);
+	}
 
-	printf("server: ");
-	int len, n;
-	n = recvfrom(sock_fd, (char*) buffer, MAXLINE, 0, (struct sockaddr*) &server_addr, &len);
+	for(;;) {
+		memset(buffer, 0, sizeof(buffer));
+		fgets(buffer, MAXLINE, stdin);
+		if (strncmp(buffer, "exit", 4) == 0) {
+			close(sock_fd);
+			exit(0);
+		}
+		// printf("you: ");
+		// puts(buffer);
+		write(sock_fd, buffer, sizeof(buffer));
 
-	puts(buffer);
+		printf("server: ");
+		read(sock_fd, buffer, sizeof(buffer));
+		puts(buffer);
+	}
+
 	close(sock_fd);
 	return 0;
 }
+

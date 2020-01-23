@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+
 #include <errno.h>
 #include <unistd.h>
+
+#include <dirent.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -14,6 +17,45 @@
 #define PORT 5050
 #define MAXLINE 1024
 
+void respondToListFiles(int client_fd, int server_fd) {
+  char buffer[MAXLINE];
+  for (;;) {
+    bzero(buffer, sizeof(buffer));
+    read(client_fd, buffer, sizeof(buffer));
+    puts(buffer);
+
+    if((strncmp(buffer, "exit", 4) == 0)) {
+      write(client_fd, "exit", sizeof(buffer));
+      close(client_fd);
+      close(server_fd);
+      exit(0);
+    } else if( (strncmp(buffer, "ls", 2)) == 0 ) {
+      struct dirent *dir_p;
+      DIR *dir;
+      if( (dir = opendir("./files")) == NULL ) {
+        printf("could not open the directory :( \n");
+        return;
+      }
+
+      while( (dir_p = readdir(dir)) != NULL ) {
+        if( strcmp(dir_p->d_name, ".") == 0 || strcmp(dir_p->d_name, "..") == 0 ) continue;
+        
+        printf("%s \n", dir_p->d_name);
+        strcpy(buffer, dir_p->d_name);
+        write(client_fd, buffer, sizeof(buffer));
+        bzero(buffer, sizeof(buffer));
+      }
+
+      closedir(dir);
+      return;
+    } else {
+      strcpy(buffer, "sorry, I can not understand \n");
+      write(client_fd, buffer, sizeof(buffer));
+      continue;
+    }
+  }
+}
+
 int main(int argc, char const *argv[]) {
   
   int server_fd;
@@ -21,7 +63,7 @@ int main(int argc, char const *argv[]) {
 
   // create a socket
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-    printf("creation failed... :(");
+    printf("creation failed... :( \n");
     exit(0);
   }
 
@@ -43,18 +85,8 @@ int main(int argc, char const *argv[]) {
 
   // get incoming messages
   char buffer[MAXLINE];
-  for (;;) {
-    bzero(buffer, sizeof(buffer));
-    read(client_fd, buffer, sizeof(buffer));
-    puts(buffer);
 
-    if((strncmp(buffer, "exit", 4) == 0)) {
-      close(client_fd);
-      close(server_fd);
-      exit(0);
-    }
-
-  }
+  respondToListFiles(client_fd, server_fd);
 
 
   close(server_fd);

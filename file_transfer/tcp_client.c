@@ -41,7 +41,14 @@ int main(int argc, char const *argv[]) {
     fgets(buffer, sizeof(buffer), stdin);
     write(client_fd, buffer, sizeof(buffer));
 
+    int file_count = 0;
+    while( read(client_fd, buffer, sizeof(buffer)) > 0 ) {
+      printf("%d %s\n", ++file_count, buffer);
+      bzero(buffer, sizeof(buffer));
+    }
+
     if((strncmp(buffer, "exit", 4) == 0)) {
+      write(client_fd, "exit", sizeof(buffer));
       close(client_fd);
       exit(0);
     }

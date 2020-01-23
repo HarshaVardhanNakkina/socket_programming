@@ -122,7 +122,7 @@ int main(int argc, char const *argv[]) {
 			int n = recvfrom(udp_fd, buffer, sizeof(buffer), 0, (struct sockaddr*) &client_addr, &len);
 
 			puts(buffer);
-			sendto(udp_fd, "harsha loves prachi but prachi loves sajal :(", sizeof(buffer), 0, (struct sockaddr*) &client_addr, sizeof(client_addr));
+			sendto(udp_fd, "msg msg msg", sizeof(buffer), 0, (struct sockaddr*) &client_addr, sizeof(client_addr));
 		}
 
 	}
