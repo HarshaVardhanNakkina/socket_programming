@@ -17,7 +17,7 @@
 #define MAXLINE 1024
 
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char *argv[]) {
 		
 		char buffer[100];
 
@@ -51,14 +51,29 @@ int main(int argc, char const *argv[]) {
 			int i;
 			for (i = 0; addr_list[i] != NULL; i++) {
 				bzero(buffer, sizeof(buffer));
-				printf("%s type: %d has resolved to %s \n", host_entry->h_name, host_entry->h_addrtype, inet_ntoa(*addr_list[i]));
-				strcpy(buffer, inet_ntoa(*addr_list[i]));
+				sprintf(buffer, "%s has resolved to %s \n", host_entry->h_name, inet_ntoa(*addr_list[i]));
 				sendto(udp_fd, buffer, sizeof(buffer), 0, (struct sockaddr*) &client_addr, sizeof(client_addr));
 			}
 		}
 
-		
+		sendto(udp_fd, "end", sizeof("end"), 0, (struct sockaddr*) &client_addr, sizeof(client_addr));
+		bzero(buffer, sizeof(buffer));
 
+		struct servent *serv_ent;
+		recvfrom(udp_fd, buffer, sizeof(buffer), 0, (struct sockaddr*) &client_addr, &len);
+		puts(buffer);
+
+
+		if( (serv_ent = getservbyname(buffer, NULL)) == NULL ) {
+			herror("getservebyname");
+			printf("could not resolve 🙏\n");
+		} else {
+			bzero(buffer, sizeof(buffer));
+			sprintf(buffer, "%s: %d", serv_ent->s_name, htons(serv_ent->s_port)); 
+			sendto(udp_fd, buffer, sizeof(buffer), 0, (struct sockaddr*) &client_addr, sizeof(client_addr));
+		}
+		sendto(udp_fd, "end", sizeof("end"), 0, (struct sockaddr*) &client_addr, sizeof(client_addr));
+		
 		close(udp_fd);
 
 		return 0;

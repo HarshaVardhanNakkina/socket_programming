@@ -17,16 +17,32 @@
 #define PORT 5050
 #define MAXLINE 1024
 
-int main(int argc, char const *argv[]) {
+void sendMessage(int sock_fd, struct sockaddr_in server_addr, char* msg) {
 
-  if (argc < 2) {
+	char buffer[MAXLINE];
+
+	strcpy(buffer, msg);
+	sendto(sock_fd, buffer, strlen(buffer), 0, (const struct sockaddr*) &server_addr, sizeof(server_addr));
+
+	bzero(buffer, sizeof(buffer));
+	int len, n;
+	while( recvfrom(sock_fd, buffer, MAXLINE, 0, (struct sockaddr*) &server_addr, &len) > 0 ) {
+		if( (strncmp(buffer, "end", 3)) == 0 ) break;
+		printf("%s\n", buffer);
+		bzero(buffer, sizeof(buffer));
+	}
+
+}
+
+int main(int argc, char *argv[]) {
+
+  if (argc < 3) {
     printf("no hostname found in args \n");
     exit(0);
   }
-  printf("%s %s", argv[1], argv[2]);
+  // printf("%s %s\n", argv[1], argv[2]);	
 	
 	int sock_fd;
-	char buffer[MAXLINE];
 
 	struct sockaddr_in server_addr;
 
@@ -41,17 +57,9 @@ int main(int argc, char const *argv[]) {
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	strcpy(buffer, argv[1]);
-	sendto(sock_fd, buffer, strlen(buffer), 0, (const struct sockaddr*) &server_addr, sizeof(server_addr));
+	sendMessage(sock_fd, server_addr, argv[1]);
+	sendMessage(sock_fd, server_addr, argv[2]);
 
-	bzero(buffer, sizeof(buffer));
-	int len, n;
-	while( recvfrom(sock_fd, buffer, MAXLINE, 0, (struct sockaddr*) &server_addr, &len) > 0 ) {
-		// int error = 0;
-		// socklen_t length = sizeof (error);
-		// printf("%d\n", getsockopt (sock_fd, SOL_SOCKET, SO_ERROR, &error, &length));
-		puts(buffer);
-		bzero(buffer, sizeof(buffer));
-	}
+	
 	return 0;
 }
