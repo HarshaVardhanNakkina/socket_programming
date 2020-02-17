@@ -36,7 +36,7 @@ void sendMessage(int sock_fd, struct sockaddr_in server_addr, char* msg) {
 
 int main(int argc, char *argv[]) {
 
-  if (argc < 3) {
+  if (argc < 2) {
     printf("no hostname found in args \n");
     exit(0);
   }
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	sendMessage(sock_fd, server_addr, argv[1]);
-	sendMessage(sock_fd, server_addr, argv[2]);
+	// sendMessage(sock_fd, server_addr, argv[2]);
 
 	
 	return 0;
