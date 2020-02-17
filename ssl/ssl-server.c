@@ -13,8 +13,7 @@
 
 #define FAIL -1
 
-int OpenListener(int port)
-{
+int OpenListener(int port) {
   int sd;
   struct sockaddr_in addr;
 
@@ -23,21 +22,18 @@ int OpenListener(int port)
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port);
   addr.sin_addr.s_addr = INADDR_ANY;
-  if (bind(sd, (struct sockaddr *)&addr, sizeof(addr)) != 0)
-  {
+  if (bind(sd, (struct sockaddr *)&addr, sizeof(addr)) != 0) {
     perror("can't bind port");
     abort();
   }
-  if (listen(sd, 10) != 0)
-  {
+  if (listen(sd, 10) != 0) {
     perror("Can't configure listening port");
     abort();
   }
   return sd;
 }
 
-int isRoot()
-{
+int isRoot() {
   if (getuid() != 0)
   {
     return 0;
@@ -47,8 +43,7 @@ int isRoot()
     return 1;
   }
 }
-SSL_CTX *InitServerCTX(void)
-{
+SSL_CTX *InitServerCTX(void) {
   SSL_METHOD *method;
   SSL_CTX *ctx;
 
@@ -64,8 +59,7 @@ SSL_CTX *InitServerCTX(void)
   return ctx;
 }
 
-void LoadCertificates(SSL_CTX *ctx, char *CertFile, char *KeyFile)
-{
+void LoadCertificates(SSL_CTX *ctx, char *CertFile, char *KeyFile) {
   /* set the local certificate from CertFile */
   if (SSL_CTX_use_certificate_file(ctx, CertFile, SSL_FILETYPE_PEM) <= 0)
   {
@@ -86,8 +80,7 @@ void LoadCertificates(SSL_CTX *ctx, char *CertFile, char *KeyFile)
   }
 }
 
-void ShowCerts(SSL *ssl)
-{
+void ShowCerts(SSL *ssl) {
   X509 *cert;
   char *line;
 
@@ -107,8 +100,7 @@ void ShowCerts(SSL *ssl)
     printf("No certificates.\n");
 }
 
-void Servlet(SSL *ssl) /* Serve the connection -- threadable */
-{
+void Servlet(SSL *ssl) {/* Serve the connection -- threadable */ 
   char buf[1024];
   char reply[1024];
   int sd, bytes;
@@ -116,12 +108,10 @@ void Servlet(SSL *ssl) /* Serve the connection -- threadable */
 
   if (SSL_accept(ssl) == FAIL) /* do SSL-protocol accept */
     ERR_print_errors_fp(stderr);
-  else
-  {
+  else {
     ShowCerts(ssl);                          /* get any certificates */
     bytes = SSL_read(ssl, buf, sizeof(buf)); /* get request */
-    if (bytes > 0)
-    {
+    if (bytes > 0) {
       buf[bytes] = 0;
       printf("Client msg: \"%s\"\n", buf);
       sprintf(reply, HTMLecho, buf);        /* construct reply */
@@ -135,19 +125,16 @@ void Servlet(SSL *ssl) /* Serve the connection -- threadable */
   close(sd);            /* close connection */
 }
 
-int main(int count, char *strings[])
-{
+int main(int count, char *strings[]) {
   SSL_CTX *ctx;
   int server;
   char *portnum;
 
-  if (!isRoot())
-  {
+  if (!isRoot()) {
     printf("This program must be run as root/sudo user!!");
     exit(0);
   }
-  if (count != 2)
-  {
+  if (count != 2) {
     printf("Usage: %s <portnum>\n", strings[0]);
     exit(0);
   }
@@ -157,8 +144,7 @@ int main(int count, char *strings[])
   ctx = InitServerCTX();                             /* initialize SSL */
   LoadCertificates(ctx, "mycert.pem", "mycert.pem"); /* load certs */
   server = OpenListener(atoi(portnum));              /* create server socket */
-  while (1)
-  {
+  while (1) {
     struct sockaddr_in addr;
     socklen_t len = sizeof(addr);
     SSL *ssl;

@@ -12,8 +12,7 @@
 
 #define FAIL -1
 
-int OpenConnection(const char *hostname, int port)
-{
+int OpenConnection(const char *hostname, int port) {
   int sd;
   struct hostent *host;
   struct sockaddr_in addr;
@@ -37,8 +36,7 @@ int OpenConnection(const char *hostname, int port)
   return sd;
 }
 
-SSL_CTX *InitCTX(void)
-{
+SSL_CTX *InitCTX(void) {
   SSL_METHOD *method;
   SSL_CTX *ctx;
 
@@ -54,8 +52,7 @@ SSL_CTX *InitCTX(void)
   return ctx;
 }
 
-void ShowCerts(SSL *ssl)
-{
+void ShowCerts(SSL *ssl) {
   X509 *cert;
   char *line;
 
@@ -75,8 +72,7 @@ void ShowCerts(SSL *ssl)
     printf("Info: No client certificates configured.\n");
 }
 
-int main(int count, char *strings[])
-{
+int main(int count, char *strings[]) {
   SSL_CTX *ctx;
   int server;
   SSL *ssl;
@@ -84,8 +80,7 @@ int main(int count, char *strings[])
   int bytes;
   char *hostname, *portnum;
 
-  if (count != 3)
-  {
+  if (count != 3) {
     printf("usage: %s <hostname> <portnum>\n", strings[0]);
     exit(0);
   }
@@ -99,12 +94,11 @@ int main(int count, char *strings[])
   SSL_set_fd(ssl, server);      /* attach the socket descriptor */
   if (SSL_connect(ssl) == FAIL) /* perform the connection */
     ERR_print_errors_fp(stderr);
-  else
-  {
+  else {
     char *msg = "Hello???";
 
     printf("Connected with %s encryption\n", SSL_get_cipher(ssl));
-    ShowCerts(ssl);                          /* get any certs */
+    // ShowCerts(ssl);                          /* get any certs */
     SSL_write(ssl, msg, strlen(msg));        /* encrypt & send message */
     bytes = SSL_read(ssl, buf, sizeof(buf)); /* get reply & decrypt */
     buf[bytes] = 0;

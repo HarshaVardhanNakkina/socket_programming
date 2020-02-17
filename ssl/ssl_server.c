@@ -170,7 +170,7 @@ int main(int count, char *strings[])
     }
     portnum = strings[1];
     ctx = InitServerCTX();								/* initialize SSL */
-    LoadCertificates(ctx, "newreq.pem", "newreq.pem");	/* load certs */
+    LoadCertificates(ctx, "mycert.pem", "mycert.pem");	/* load certs */
     server = OpenListener(atoi(portnum));				/* create server socket */
     while (1)
     {   struct sockaddr_in addr;
