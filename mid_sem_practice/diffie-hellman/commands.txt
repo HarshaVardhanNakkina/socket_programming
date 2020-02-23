@@ -1,0 +1,20 @@
+10435  openssl pkeyutl -derive -inkey bob_private.key -peerkey ../Alice/alice_public.key -out secret
+10436  cd ..
+10437  openssl genpkey -genparam -algorithm DH -out dhp.pem
+10438  cd Alice
+10439  openssl genpkey -paramfile ../dhp.pem -out alice_private.key
+10440  openssl pkey -pubout -in alice_private.key -out alice_public.key
+10441  rm dhp.pem
+10442  cd ..
+10443  cd Bob
+10444  openssl genpkey -paramfile ../dhp.pem -out bob_private.key
+10445  openssl pkey -pubout -in bob_private.key -out bob_public.key
+10446  rm dhp.pem
+10447  openssl pkeyutl -derive -inkey bob_private.key -peerkey ../Alice/alice_public.key -out secret
+10448  cd ../Alice
+10449  openssl pkeyutl -derive -inkey alice_private.key -peerkey ../Bob/bob_public.key -out secret
+10450  cmp secret ../Bob/secret
+10451  history | tail -n 20
+10452  history | tail -n 30
+10453  history | tail -n 35
+10454  cd ..

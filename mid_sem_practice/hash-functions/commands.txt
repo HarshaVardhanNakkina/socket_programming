@@ -1,0 +1,8 @@
+10570  openssl dgst -out msg.hash msg.txt
+10571  openssl dgst -sha256 msg.txt
+10572  openssl genpkey -aes-256-cbc -pass pass:pass -algorithm RSA -pkeyopt rsa_keygen_bits:512 -out private.key
+10573  openssl pkey -pubout -in private.key -out public.key
+10574  l
+10575  cat msg.hash
+10576  openssl dgst -sha256 -sign private.key -out msg.sign msg.txt
+10577  openssl dgst -sha256 -verify public.key -signature msg.sign msg.txt
