@@ -1,0 +1,14 @@
+10364  openssl genpkey -bf-cbc -pass pass:pass -algorithm RSA -pkeyopt rsa_keygen_bits:512 -out private.key
+10365  openssl pkey -in private.key -text -noout
+10366  openssl pkey -pubout -in private.key -out public.key
+10367  openssl pkey -pubin -in public.key -text -noout
+10368  history | tail
+10369  history | tail -n 4 > commands.txt
+10370  cat commands.txt
+10373  nano msg.txt
+10374  openssl pkeyutl -encrypt -inkey public.key -pubin -in msg.txt -out msg.enc
+10375  xxd msg.enc
+10376  openssl pkeyutl -decrypt -inkey private.key -in msg.enc -out msg.dec
+10377  cat msg.dec
+10378  cmp msg.txt msg.dec
+10379  history | tail -n 7

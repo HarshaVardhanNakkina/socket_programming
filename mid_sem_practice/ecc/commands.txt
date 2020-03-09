@@ -1,0 +1,5 @@
+10535  openssl genpkey -genparam -algorithm EC -pkeyopt ec_paramgen_curve:secp256k1 EC -out ecp.pem
+10536  openssl genpkey -genparam -algorithm EC -pkeyopt ec_paramgen_curve:secp256k1 -out ecp.pem
+10537  openssl pkeyparam -in ecp.pem -text -noout
+10538  openssl genpkey -paramfile ecp.pem -out private.key
+10539  openssl pkey -pubout -in private.key -out public.key

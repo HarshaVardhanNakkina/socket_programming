@@ -1,0 +1,20 @@
+10311  nano msg.txt
+10312  openssl enc -base64 -in msg.txt
+10313  echo "bXNnIG1zZywgbXNnIG1zZywgbXNnIG1zZwo=" | openssl enc -base64 -d
+10314  openssl enc -aes-256-cbc -in msg.txt -out msg.enc
+10315  history | grep secret
+10316  openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.enc
+10317  xxd msg.txt
+10318  xxd msg.enc
+10319  cat msg.txt
+10320  openssl enc -aes-256-cbc -d -pbkdf2 -in msg.enc -out msg.dec
+10321  cat msg.dec
+10322  cmp msg.txt msg.dec
+10323  history | tail
+10324  man script
+10325  openssl enc -aes-256-cbc -pbkdf2 -in msg.txt -out msg.enc -pass pass:pass -a
+10326  cat msg.enc
+10327  openssl enc -aes-256-cbc -d -pbkdf2 -in msg.enc -out msg.dec -pass pass:pass -a
+10328  cat msg.dec
+10329  history | tail
+10330  history | tail -n 20
